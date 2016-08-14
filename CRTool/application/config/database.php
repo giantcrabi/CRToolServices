@@ -64,9 +64,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'GIAN\SQLEXPRESS',
-	'username' => 'sa',
-	'password' => 'crtool123',
+	'hostname' => 'crtooldb.database.windows.net',
+	'username' => 'crtool@crtooldb',
+	'password' => '@admin123',
 	'database' => 'SalesOut',
 	'dbdriver' => 'sqlsrv',
 	'dbprefix' => '',
