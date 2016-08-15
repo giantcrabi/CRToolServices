@@ -44,10 +44,8 @@ class Services_model extends CI_Model {
 
     function getReport($IDCR, $DateFrom, $DateTo) {
         $result = $this->db->query("
-            SELECT SN, Name, RegDate, ItemDesc, InctvStatus
+            SELECT SN, OutletName, RegDate, ItemDesc, InctvStatus
             FROM dbo.tSNRegistration
-            INNER JOIN dbo.mOutlet
-            ON dbo.tSNRegistration.OutletID = dbo.mOutlet.ID
             WHERE RegDate >= "."'".$DateFrom."'"." AND RegDate <= "."'".$DateTo."'"." AND CreateUserID = ".$IDCR."")->result();
 
         return $result;
@@ -55,10 +53,8 @@ class Services_model extends CI_Model {
 
     function getAchievement($IDCR, $date) {
         $result = $this->db->query("
-            SELECT Price, RegDate, InctvStatus
+            SELECT SalesInPrice, RegDate, InctvStatus
             FROM dbo.tSNRegistration
-            INNER JOIN dbo.vItem
-            ON dbo.tSNRegistration.ItemID = dbo.vItem.ID
             WHERE RegDate >= DATEADD(month, -6, "."'".$date."'".") AND RegDate <= "."'".$date."'"." AND CreateUserID = ".$IDCR."")->result();
 
         return $result;
@@ -90,22 +86,6 @@ class Services_model extends CI_Model {
             UPDATE dbo.mCR
             SET CheckInPlace=".$IDOutlet.", CheckInDate="."'".$CheckInDate."'"."
             WHERE ID=".$IDCR."");
-
-        if($result)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    function updateSN($SN, $Status) {
-        $result = $this->db->query("
-            UPDATE dbo.vSN
-            SET SalesOutStatus=".$Status."
-            WHERE SN=".$SN."");
 
         if($result)
         {

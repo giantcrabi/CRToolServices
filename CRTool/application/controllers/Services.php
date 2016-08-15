@@ -126,41 +126,50 @@ class Services extends REST_Controller
         $RegDate = $this->post('date');
 
         if($IDCR != NULL && $SN != NULL && $IDOutlet != NULL && $RegDate != NULL){
-
+            $outlet = $this->Services_model->getOutlet($IDOutlet);
             $searched_SN = $this->Services_model->getSN($SN);
 
-            if($searched_SN)
+            if($outlet && $searched_SN)
             {
-                $item = $this->Services_model->getItem($searched_SN[0]->ItemID);
-
-                $data = array(
-                    'CreateUserID' => $IDCR,
-                    'SN' => $SN,
-                    'OutletID' => $IDOutlet,
-                    'RegDate' => $RegDate,
-                    'ItemID' => $item[0]->ID,
-                    'ItemDesc' => $item[0]->Description,
-                    'InctvStatus' => 0,
-                    'Status' => 1,
-                    'DealerID' => 1
-                );
-
-                $result = $this->Services_model->postSalesOut($data);
-
-                if($result)
+                if($outlet[0]->ChannelID == $searched_SN[0]->BizcardID)
                 {
-                    $update = $this->Services_model->updateSN($SN, 0);
+                    $item = $this->Services_model->getItem($searched_SN[0]->ItemID);
 
-                    $this->response([[
-                        'status' => TRUE,
-                        'message' => 'SN submitted'
-                    ]], REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+                    $data = array(
+                        'CreateUserID' => $IDCR,
+                        'SN' => $searched_SN[0]->SN,
+                        'OutletID' => $outlet[0]->ID,
+                        'OutletName' => $outlet[0]->Name,
+                        'RegDate' => $RegDate,
+                        'ItemID' => $item[0]->ID,
+                        'ItemDesc' => $item[0]->Description,
+                        'InctvStatus' => 0,
+                        'Status' => 1,
+                        'DealerID' => $searched_SN[0]->BizcardID
+                    );
+
+                    $result = $this->Services_model->postSalesOut($data);
+
+                    if($result)
+                    {
+                        $this->response([[
+                            'status' => TRUE,
+                            'message' => 'SN submitted'
+                        ]], REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+                    }
+                    else
+                    {
+                        $this->response([[
+                            'status' => FALSE,
+                            'message' => 'Failed to submit SN'
+                        ]]);
+                    }
                 }
                 else
                 {
                     $this->response([[
                         'status' => FALSE,
-                        'message' => 'Failed to submit SN'
+                        'message' => 'SN belong to another Dealer'
                     ]]);
                 }
             }
