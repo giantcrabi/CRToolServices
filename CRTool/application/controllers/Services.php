@@ -132,66 +132,64 @@ class Services extends REST_Controller
 
             if($user && $outlet && $searched_SN)
             {
-                if($outlet[0]->ChannelID == $searched_SN[0]->BizcardID)
+                if($outlet[0]->ChannelID != $searched_SN[0]->BizcardID)
                 {
-                    $submittedSN = $this->Services_model->getSNSubmitted($SN);
+                    $this->response([[
+                        'status' => FALSE,
+                        'message' => 'SN belong to another Dealer'
+                    ]]);
+                }
 
-                    if($submittedSN)
-                    {
-                        if($submittedSN[0]->CreateUserID == $user[0]->ID)
-                        {
-                            $this->response([[
-                                'status' => FALSE,
-                                'message' => "SN already submitted by you on ".$submittedSN[0]->RegDate.""
-                            ]]);
-                        }
-                        else
-                        {
-                            $this->response([[
-                                'status' => FALSE,
-                                'message' => "SN already submitted by ".$submittedSN[0]->CreateUser." on ".$submittedSN[0]->RegDate.""
-                            ]]);
-                        }
-                    }
+                $submittedSN = $this->Services_model->getSNSubmitted($SN);
 
-                    $item = $this->Services_model->getItem($searched_SN[0]->ItemID);
-
-                    $data = array(
-                        'CreateUserID' => $user[0]->ID,
-                        'CreateUser' => $user[0]->Name,
-                        'SN' => $searched_SN[0]->SN,
-                        'OutletID' => $outlet[0]->ID,
-                        'OutletName' => $outlet[0]->Name,
-                        'RegDate' => $RegDate,
-                        'ItemID' => $item[0]->ID,
-                        'ItemDesc' => $item[0]->Description,
-                        'InctvStatus' => 0,
-                        'Status' => 1,
-                        'DealerID' => $searched_SN[0]->BizcardID
-                    );
-
-                    $result = $this->Services_model->postSalesOut($data);
-
-                    if($result)
+                if($submittedSN)
+                {
+                    if($submittedSN[0]->CreateUserID == $user[0]->ID)
                     {
                         $this->response([[
-                            'status' => TRUE,
-                            'message' => 'SN submitted'
-                        ]], REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
+                            'status' => FALSE,
+                            'message' => "SN already submitted by you on ".$submittedSN[0]->RegDate.""
+                        ]]);
                     }
                     else
                     {
                         $this->response([[
                             'status' => FALSE,
-                            'message' => 'Failed to submit SN'
+                            'message' => "SN already submitted by ".$submittedSN[0]->CreateUser." on ".$submittedSN[0]->RegDate.""
                         ]]);
                     }
+                }
+
+                $item = $this->Services_model->getItem($searched_SN[0]->ItemID);
+
+                $data = array(
+                    'CreateUserID' => $user[0]->ID,
+                    'CreateUser' => $user[0]->Name,
+                    'SN' => $searched_SN[0]->SN,
+                    'OutletID' => $outlet[0]->ID,
+                    'OutletName' => $outlet[0]->Name,
+                    'RegDate' => $RegDate,
+                    'ItemID' => $item[0]->ID,
+                    'ItemDesc' => $item[0]->Description,
+                    'InctvStatus' => 0,
+                    'Status' => 1,
+                    'DealerID' => $searched_SN[0]->BizcardID
+                );
+
+                $result = $this->Services_model->postSalesOut($data);
+
+                if($result)
+                {
+                    $this->response([[
+                        'status' => TRUE,
+                        'message' => 'SN submitted'
+                    ]], REST_Controller::HTTP_CREATED); // CREATED (201) being the HTTP response code
                 }
                 else
                 {
                     $this->response([[
                         'status' => FALSE,
-                        'message' => 'SN belong to another Dealer'
+                        'message' => 'Failed to submit SN'
                     ]]);
                 }
             }
