@@ -7,17 +7,27 @@ class Services_model extends CI_Model {
         $this->load->database('default');
     }
 
-    function getUser($username, $password)
+    function getUser($sourceID = NULL, $username = NULL, $password = NULL)
     {
-        $result = $this->db->get_where('dbo.mUser', array('userid' => $username, 'password' => $password))->result();
-
+        if($sourceID === NULL || $sourceID == 0)
+        {
+            if($username && $password)
+            {
+                $result = $this->db->get_where('dbo.mUser', array('userid' => $username, 'password' => $password))->result();
+            }
+        }
+        else
+        {
+            $result = $this->db->get_where('dbo.mUser', array('SourceID' => $sourceID))->result();
+        }
+        
         return $result;
     }
 
     function getOutlet($IDOutlet = NULL, $lat = NULL, $lng = NULL) {
     	if($IDOutlet === NULL || $IDOutlet == 0)
     	{
-            if($lat != NULL && $lng != NULL)
+            if($lat && $lng)
             {
                 $result = $this->db->query("WITH GreatCircleDistance AS
                 (
@@ -60,8 +70,19 @@ class Services_model extends CI_Model {
         return $result;
     }
 
+    function getSNSubmitted($SN) {
+        $result = $this->db->query("
+            SELECT CreateUserID, CreateUser, CONVERT(VARCHAR(20),RegDate,103) as RegDate
+            FROM dbo.tSNRegistration s
+            JOIN dbo.mUser u
+            ON s.CreateUserID = u.ID
+            WHERE SN = "."'".$SN."'"." AND s.Status = 1 AND Type IN (1,2)")->result();
+
+        return $result;
+    }
+
     function getSN($SN) {
-        $result = $this->db->get_where('dbo.vSN', array('SN' => $SN, 'SalesOutStatus' => NULL))->result();
+        $result = $this->db->get_where('dbo.vSN', array('SN' => $SN))->result();
 
         return $result;
     }

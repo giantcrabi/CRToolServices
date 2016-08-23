@@ -21,7 +21,7 @@ class Services extends REST_Controller
 
 		if($IDOutlet === NULL)
         {
-            if($lat != NULL && $lng != NULL)
+            if($lat && $lng)
             {
                 $outlets = $this->Services_model->getOutlet(0, $lat, $lng);
             }
@@ -73,7 +73,7 @@ class Services extends REST_Controller
         $DateFrom = $this->get('datefrom');
         $DateTo = $this->get('dateto');
 
-        if($IDCR != NULL && $DateFrom != NULL && $DateTo != NULL)
+        if($IDCR && $DateFrom && $DateTo)
         {
             $reports = $this->Services_model->getReport($IDCR, $DateFrom, $DateTo);
 
@@ -100,7 +100,7 @@ class Services extends REST_Controller
         $IDCR = $this->get('id');
         $date = $this->get('date');
 
-        if($IDCR != NULL && $date != NULL)
+        if($IDCR && $date)
         {
             $reports = $this->Services_model->getAchievement($IDCR, $date);
 
@@ -125,18 +125,40 @@ class Services extends REST_Controller
         $IDOutlet = $this->post('idoutlet');
         $RegDate = $this->post('date');
 
-        if($IDCR != NULL && $SN != NULL && $IDOutlet != NULL && $RegDate != NULL){
+        if($IDCR && $SN && $IDOutlet && $RegDate){
+            $user = $this->Services_model->getUser($IDCR);
             $outlet = $this->Services_model->getOutlet($IDOutlet);
             $searched_SN = $this->Services_model->getSN($SN);
 
-            if($outlet && $searched_SN)
+            if($user && $outlet && $searched_SN)
             {
                 if($outlet[0]->ChannelID == $searched_SN[0]->BizcardID)
                 {
+                    $submittedSN = $this->Services_model->getSNSubmitted($SN);
+
+                    if($submittedSN)
+                    {
+                        if($submittedSN[0]->CreateUserID == $user[0]->ID)
+                        {
+                            $this->response([[
+                                'status' => FALSE,
+                                'message' => "SN already submitted by you on ".$submittedSN[0]->RegDate.""
+                            ]]);
+                        }
+                        else
+                        {
+                            $this->response([[
+                                'status' => FALSE,
+                                'message' => "SN already submitted by ".$submittedSN[0]->CreateUser." on ".$submittedSN[0]->RegDate.""
+                            ]]);
+                        }
+                    }
+
                     $item = $this->Services_model->getItem($searched_SN[0]->ItemID);
 
                     $data = array(
-                        'CreateUserID' => $IDCR,
+                        'CreateUserID' => $user[0]->ID,
+                        'CreateUser' => $user[0]->Name,
                         'SN' => $searched_SN[0]->SN,
                         'OutletID' => $outlet[0]->ID,
                         'OutletName' => $outlet[0]->Name,
@@ -177,7 +199,7 @@ class Services extends REST_Controller
             {
                 $this->response([[
                     'status' => FALSE,
-                    'message' => 'SN not found or already submitted'
+                    'message' => 'SN not found'
                 ]]);
             }
         }
@@ -193,9 +215,9 @@ class Services extends REST_Controller
         $username = $this->post('username');
         $password = $this->post('password');
 
-        if($username != NULL && $password != NULL)
+        if($username && $password)
         {
-            $user = $this->Services_model->getUser($username, $password);
+            $user = $this->Services_model->getUser(0, $username, $password);
 
             if($user)
             {
@@ -236,7 +258,7 @@ class Services extends REST_Controller
         $IDOutlet = $this->post('idoutlet');
         $CheckInDate = $this->post('datetime');
 
-        if($IDCR != NULL && $IDOutlet != NULL && $CheckInDate != NULL)
+        if($IDCR && $IDOutlet && $CheckInDate)
         {
             $result = $this->Services_model->updateCR($IDCR, $IDOutlet, $CheckInDate);
 
