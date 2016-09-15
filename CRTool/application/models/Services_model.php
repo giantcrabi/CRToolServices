@@ -118,4 +118,31 @@ class Services_model extends CI_Model {
         }
     }
 
+    function updateUser($IDCR, $password = NULL, $data = NULL)
+    {
+        if($password == NULL)
+        {
+            $result = $this->db->query("
+            UPDATE dbo.mUser
+            SET Name=".$data['Name'].", Handphone=".$data['Handphone'].", Email=".$data['Email'].", BankName=".$data['BankName'].", BankAccountName=".$data['BankAccountName'].", BankAccountNo=".$data['BankAccountNo']."
+            WHERE SourceID=".$IDCR."");
+        }
+        elseif($data == NULL)
+        {
+            $result = $this->db->query("
+            UPDATE dbo.mUser
+            SET Password=".$password."
+            WHERE SourceID=".$IDCR."");
+        }
+
+        if($result)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
 }

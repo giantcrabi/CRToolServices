@@ -208,6 +208,96 @@ class Services extends REST_Controller
         
     }
 
+    public function profile_get()
+    {
+        $IDCR = $this->get('id');
+
+        if($IDCR)
+        {
+            $user = $this->Services_model->getUser($IDCR);
+
+            if($user)
+            {
+                $this->response($user, REST_Controller::HTTP_OK);
+            } 
+            else
+            {
+                $this->response([[
+                    'status' => FALSE,
+                    'message' => 'No user was found'
+                ]]);
+            }
+        }
+        else
+        {
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function profile_post()
+    {
+        $IDCR = $this->post('id');
+        $namaCR = $this->post('namaCR');
+        $nohp = $this->post('nomorhp');
+        $email = $this->post('email');
+        $namabank = $this->post('namabank');
+        $namaakun = $this->post('namaakun');
+        $noakun = $this->post('nomorakun');
+        $password = $this->post('password');
+
+        if($IDCR && $namaCR && $nohp && $email && $namabank && $namaakun && $noakun)
+        {
+            $data = array(
+                'Name' => $namaCR,
+                'Handphone' => $nohp,
+                'Email' => $email,
+                'BankName' => $namabank,
+                'BankAccountName' => $namaakun,
+                'BankAccountNo' => $noakun
+            );
+
+            $result = $this->Services_model->updateUser($IDCR, NULL, $data);
+
+            if($result)
+            {
+                $this->response([[
+                    'status' => TRUE,
+                    'message' => 'Profile updated'
+                ]], REST_Controller::HTTP_CREATED);
+            }
+            else
+            {
+                $this->response([[
+                    'status' => FALSE,
+                    'message' => 'Failed to update profile'
+                ]]);
+            }
+        }
+        elseif($IDCR && $password)
+        {
+            $result = $this->Services_model->updateUser($IDCR, $password, NULL);
+
+            if($result)
+            {
+                $this->response([[
+                    'status' => TRUE,
+                    'message' => 'Password updated'
+                ]], REST_Controller::HTTP_CREATED);
+            }
+            else
+            {
+                $this->response([[
+                    'status' => FALSE,
+                    'message' => 'Failed to update password'
+                ]]);
+            }
+        }
+        else
+        {
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
     public function login_post()
     {
         $username = $this->post('username');
