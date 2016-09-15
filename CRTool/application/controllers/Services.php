@@ -210,7 +210,7 @@ class Services extends REST_Controller
 
     public function profile_get()
     {
-        $IDCR = $this->get('id');
+        $IDCR = $this->get('idCR');
 
         if($IDCR)
         {
@@ -236,7 +236,7 @@ class Services extends REST_Controller
 
     public function profile_post()
     {
-        $IDCR = $this->post('id');
+        $IDCR = $this->post('idCR');
         $namaCR = $this->post('namaCR');
         $nohp = $this->post('nomorhp');
         $email = $this->post('email');
