@@ -214,7 +214,7 @@ class Services extends REST_Controller
 
         if($IDCR)
         {
-            $user = $this->Services_model->getProfile($IDCR);
+            $user = $this->Services_model->getUser($IDCR);
 
             if($user)
             {

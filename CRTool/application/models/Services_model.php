@@ -24,16 +24,6 @@ class Services_model extends CI_Model {
         return $result;
     }
 
-    function getProfile($sourceID)
-    {
-        $result = $this->db->query("
-            SELECT Name, Handphone, Email, BankName, BankAccountName, BankAccountNo
-            FROM dbo.mUser
-            WHERE SourceID=".$sourceID."")->result();
-
-        return $result;
-    }
-
     function getOutlet($IDOutlet = NULL, $lat = NULL, $lng = NULL) {
     	if($IDOutlet === NULL || $IDOutlet == 0)
     	{
