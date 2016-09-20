@@ -124,14 +124,14 @@ class Services_model extends CI_Model {
         {
             $result = $this->db->query("
             UPDATE dbo.mUser
-            SET Name=".$data['Name'].", Handphone=".$data['Handphone'].", Email=".$data['Email'].", BankName=".$data['BankName'].", BankAccountName=".$data['BankAccountName'].", BankAccountNo=".$data['BankAccountNo']."
+            SET Name="."'".$data['Name']."'".", Handphone=".$data['Handphone'].", Email="."'".$data['Email']."'".", BankName="."'".$data['BankName']."'".", BankAccountName="."'".$data['BankAccountName']."'".", BankAccountNo="."'".$data['BankAccountNo']."'"."
             WHERE SourceID=".$IDCR."");
         }
         elseif($data == NULL)
         {
             $result = $this->db->query("
             UPDATE dbo.mUser
-            SET Password=".$password."
+            SET Password="."'".$password."'"."
             WHERE SourceID=".$IDCR."");
         }
 
