@@ -237,12 +237,12 @@ class Services extends REST_Controller
     public function profile_post()
     {
         $IDCR = $this->post('idCR');
-        $namaCR = $this->post('namaCR');
-        $nohp = $this->post('nomorhp');
-        $email = $this->post('email');
-        $namabank = $this->post('namabank');
-        $namaakun = $this->post('namaakun');
-        $noakun = $this->post('nomorakun');
+        $namaCR = $this->post('Name');
+        $nohp = $this->post('Handphone');
+        $email = $this->post('Email');
+        $namabank = $this->post('BankName');
+        $namaakun = $this->post('BankAccountName');
+        $noakun = $this->post('BankAccountNo');
         $password = $this->post('password');
 
         if($IDCR && $namaCR && $nohp && $email && $namabank && $namaakun && $noakun)
